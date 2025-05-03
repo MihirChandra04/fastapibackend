@@ -4,9 +4,6 @@ from .database import collection
 
 router = APIRouter()
 
-@router.get('/')
-async def data():
-    return("data")
 
 @router.post("/submit")
 async def submit_form(data: FormData):
