@@ -4,6 +4,14 @@ from .database import collection
 
 router = APIRouter()
 
+@router.get("/user")
+async def get_data(name : dict):
+    try:
+        data = collection.find_one({"firstname":name["name"]})
+        data["_id"] = str(data["_id"])
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/submit")
 async def submit_form(data: FormData):
