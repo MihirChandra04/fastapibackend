@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from .model import FormData
+from .model import FormData,AddressUpdate
 from .database import collection
+from pydantic import EmailStr
 
 router = APIRouter()
 
@@ -14,6 +15,23 @@ async def get_data(email : dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.put("/update-address/{email}")
+async def update_address(email: EmailStr, address: AddressUpdate):
+    result = collection.update_one(
+        {"email": email},
+        {"$set": {
+            "street_address": address.street_address,
+            "city": address.city,
+            "state": address.state,
+            "country": address.country,
+            "postalCode": address.postalCode
+        }}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {"message": "Address updated successfully"}
 
 @router.post("/submit")
 async def submit_form(data: FormData):
